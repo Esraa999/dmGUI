@@ -35,7 +35,7 @@ class TimerThread(threading.Thread):
 
     def reset_timer(self):
         self.timer_thread.stop()  # stop the previous timer
-        self.timer_thread = TimerThread(5, TimerThread.quit_app,self.window)# create a new timer thread
+        self.timer_thread = TimerThread(10, TimerThread.wait_page,self.window)# create a new timer thread
         self.timer_thread.start()  # start the new timer thread
     
     def wait_page(self):
@@ -51,24 +51,30 @@ class Waiting(Frame):
         self.frame = Frame(window) # create timer thread
         self.create_widgets()
         TimerThread.reset_timer(self)
-  
-    def create_widgets(self):        
-        self.frame1 = Frame(self.window, bg="#D9D9D9", width=312, height=555)
-        self.frame1.place(relx=0.5, rely=0.5, anchor=CENTER)
 
+    def create_widgets(self):      
+        self.frame = Frame(
+            self.window,
+            bg="#D9D9D9",
+            height=555,
+            width=314,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge"
+        )
+        self.frame.place(relx=0.5, rely=0.5, anchor=CENTER)
         self.image_path = relative_to_assets("logo.png")
         self.image = Image.open(self.image_path)
         self.photo = ImageTk.PhotoImage(self.image)
-
-        self.image_label = Label(self.frame1, image=self.photo)
-        self.image_label.place(relx=0.5, rely=0.1, anchor=CENTER)
+        self.image_label = Label(self.frame, image=self.photo)
+        self.image_label.place(relx=0.5, rely=0.05, anchor=CENTER)
 
         self.continue_img = PhotoImage(file=relative_to_assets("continue.png"))
         self.continue_but= Button(self.frame,bg="#D9D9D9", image=self.continue_img, borderwidth=0,command=lambda: self.GetNumber("3"), highlightthickness=0, relief="flat")
         self.continue_but.place(relx=0.167192,rely=0.2936936)
         
         self.quit_img = PhotoImage(file=relative_to_assets("quit.png"))
-        self.quit_but= Button(self.frame,bg="#D9D9D9", image=self.quit_img, borderwidth=0,command=lambda: TimerThread(5, TimerThread.quit_app,self.window), highlightthickness=0, relief="flat")
+        self.quit_but= Button(self.frame,bg="#D9D9D9", image=self.quit_img, borderwidth=0,command=lambda: TimerThread(10, TimerThread.quit_app,self.window), highlightthickness=0, relief="flat")
         self.quit_but.place(relx=0.54,rely=0.2936936)
 
 class MainPage(Frame):
