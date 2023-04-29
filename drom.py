@@ -48,7 +48,7 @@ class Waiting(Frame):
     def __init__(self, window):
         Frame.__init__(self, window)
         self.window = window
-        self.frame = Frame(window) # create timer thread
+        self.frame = Frame(self.window) # create timer thread
         self.create_widgets()
         TimerThread.reset_timer(self)
 
@@ -74,8 +74,14 @@ class Waiting(Frame):
         self.continue_but.place(relx=0.167192,rely=0.2936936)
         
         self.quit_img = PhotoImage(file=relative_to_assets("quit.png"))
-        self.quit_but= Button(self.frame,bg="#D9D9D9", image=self.quit_img, borderwidth=0,command=lambda: TimerThread(10, TimerThread.quit_app,self.window), highlightthickness=0, relief="flat")
+        self.quit_but= Button(self.frame,bg="#D9D9D9", image=self.quit_img, borderwidth=0,command= self.switch_to_Main, highlightthickness=0, relief="flat")
         self.quit_but.place(relx=0.54,rely=0.2936936)
+
+    def switch_to_Main(self):
+        TimerThread.reset_timer(self) # reset the timer
+        self.image_label.destroy()
+        self.frame.destroy() # Forget the frame
+        MainPage(self.window) # Switch to Page1
 
 class MainPage(Frame):
     def __init__(self, window):
