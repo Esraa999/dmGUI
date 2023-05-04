@@ -14,7 +14,7 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 class TimerThread(threading.Thread):
-    def __init__(self, timeout, callback,window):
+    def __init__(self, timeout, callback, window):
         threading.Thread.__init__(self)
         self.timeout = timeout
         self.callback = callback
@@ -22,21 +22,24 @@ class TimerThread(threading.Thread):
         self.event = threading.Event()
 
     def run(self):
+        elapsed_seconds = 0
         while not self.event.is_set():
             self.event.wait(self.timeout)
+            elapsed_seconds += self.timeout
             if not self.event.is_set():
+                print(f"{elapsed_seconds} seconds have elapsed")
                 self.callback(self)
 
     def stop(self):
         self.event.set()
-        self.join()
+        # self.join()
 
     def start_timer(self):
         self.timer_thread.start()  # start the timer thread
 
     def reset_timer(self):
         self.timer_thread.stop()  # stop the previous timer
-        self.timer_thread = TimerThread(10, TimerThread.wait_page,self.window)# create a new timer thread
+        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)# create a new timer thread
         self.timer_thread.start()  # start the new timer thread
     
     def wait_page(self):
@@ -51,7 +54,7 @@ class Waiting(Frame):
         self.window = window
         self.frame = Frame(self.window) # create timer thread
         self.create_widgets()
-        TimerThread.start_timer(self)
+        self.timer_thread = TimerThread(10,TimerThread.quit_app, self.window)
 
     def create_widgets(self):      
         self.frame = Frame(
@@ -70,6 +73,9 @@ class Waiting(Frame):
         self.image_label = Label(self.frame, image=self.photo)
         self.image_label.place(relx=0.5, rely=0.05, anchor=CENTER)
 
+        self.label1 = Label(self.frame,bg="#D9D9D9", text="DO YOU WANT TO CONTINUE", font=("SansSerifCollection", 9))
+        self.label1.place(relx=0.5, rely=0.3, anchor=CENTER)
+
         self.continue_img = PhotoImage(file=relative_to_assets("continue.png"))
         self.continue_but= Button(self.frame,bg="#D9D9D9", image=self.continue_img, borderwidth=0,command=lambda: self.GetNumber("3"), highlightthickness=0, relief="flat")
         self.continue_but.place(relx=0.167192,rely=0.2936936)
@@ -79,7 +85,7 @@ class Waiting(Frame):
         self.quit_but.place(relx=0.54,rely=0.2936936)
 
     def switch_to_Main(self):
-        TimerThread.reset_timer(self) # reset the timer
+        TimerThread.stop(self.timer_thread) # stop the timer
         self.image_label.destroy()
         self.frame.destroy() # Forget the frame
         MainPage(self.window) # Switch to Page1
@@ -101,7 +107,7 @@ class MainPage(Frame):
     def switch_to_another_frame(self, event):
         self.image_label.destroy() # Remove the image label
         self.frame.destroy() # Forget the frame
-        Page1.focus_set(self)
+        # Page1.focus_set(self)
         Page1(self.window) # Switch to Page1
 
 class Page1(Frame):
@@ -109,7 +115,7 @@ class Page1(Frame):
         Frame.__init__(self, window)
         self.window = window
         self.frame = Frame(window)# create timer thread
-        self.timer_thread = TimerThread(5, TimerThread.wait_page,self.window)  # create timer thread
+        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets()
         TimerThread.start_timer(self)
   
@@ -156,9 +162,9 @@ class Page2(Frame):
         Frame.__init__(self, window)
         self.window = window
         self.frame = Frame(window)
-        self.timer_thread = TimerThread(5, TimerThread.wait_page,self.window)  # create timer thread
+        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets()
-        TimerThread.start_timer(self)
+        # TimerThread.start_timer(self)
   
     def create_widgets(self):        
         self.frame = Frame(
@@ -212,7 +218,7 @@ class Page2(Frame):
         )
         entry_1.place(
             relx=0.2207133757961783,
-            rely=0.149,
+            rely=0.145,
             width=174.3867359161377,
             height=28.448471069335938
         )
@@ -280,15 +286,20 @@ class Page2(Frame):
         TimerThread.reset_timer(self)  # reset the timer
         self.my_string
         self.my_string += letter
+        self.print_on_screen(self.my_string )
         print(self.my_string)
-
+    
+    def print_on_screen(self,my_string):
+        self.my_string = my_string
+        label = tk.Label(self.frame, text=self.my_string, font=('Inter', 13))
+        label.place(relx=0.2207133757961783, rely=0.147)
+        
 class Page3(Frame):
     def __init__(self, window,score):
         Frame.__init__(self, window)
         self.window = window
-        self.timer_thread = TimerThread(5, TimerThread.wait_page,self.window)  # create timer thread
+        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets(score)
-        TimerThread.start_timer(self)
 
     def create_widgets(self,score):      
         self.frame = Frame(
@@ -384,10 +395,9 @@ class Page4(Frame):
     def __init__(self, window):
         Frame.__init__(self, window)
         self.window = window
-        self.timer_thread = TimerThread(5, TimerThread.wait_page,self.window)  # create timer thread
+        self.timer_thread = TimerThread(15, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets()
-        TimerThread.start_timer(self)
-  
+        # TimerThread.start_timer(self)
 
     def create_widgets(self):      
         self.frame = Frame(
@@ -472,7 +482,7 @@ class Page5(Frame):
             rely=0.25,
             anchor=CENTER
         )
-        self.window.after(7000, MainPage(self.window))
+        self.window.after(7000, TimerThread.quit_app)
 
 # class VideoPlayer:
 #     def __init__(self, video_path):
@@ -517,4 +527,5 @@ def tkinter_loop():
 if __name__ == "__main__":
     # pygame_thread = threading.Thread(target=pygame_loop)
     # pygame_thread.start()
+    # pygame_loop()
     tkinter_loop()

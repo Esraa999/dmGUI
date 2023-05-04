@@ -20,7 +20,7 @@ class MainPage(Frame):
         self.frame1 = Frame(self.master, bg="#D9D9D9", width=312, height=555)
         self.frame1.place(relx=0.5, rely=0.5, anchor=CENTER)
         
-        self.image_path = relative_to_assets("image_1.png")
+        self.image_path = relative_to_assets("logo.png")
         self.image = Image.open(self.image_path)
         self.photo = ImageTk.PhotoImage(self.image)
 
