@@ -4,6 +4,8 @@ from tkinter import *
 import cv2
 import threading
 import time
+import requests
+from io import BytesIO
 from PIL import Image, ImageTk
 from pygame import *
 
@@ -32,7 +34,6 @@ class TimerThread(threading.Thread):
 
     def stop(self):
         self.event.set()
-        # self.join()
 
     def start_timer(self):
         self.timer_thread.start()  # start the timer thread
@@ -108,7 +109,69 @@ class MainPage(Frame):
         self.image_label.destroy() # Remove the image label
         self.frame.destroy() # Forget the frame
         # Page1.focus_set(self)
-        Page1(self.window) # Switch to Page1
+        # Page1(self.window)
+        QR(self.window) # Switch to Page1
+
+class QR(Frame):
+    def __init__(self, window):
+        Frame.__init__(self, window)
+        self.window = window
+        self.frame = Frame(window)# create timer thread
+        self.timer_thread = TimerThread(12, TimerThread.wait_page, self.window)  # create timer thread
+        self.create_widgets()
+        TimerThread.start_timer(self)
+    
+    def load_image(self):
+        auth = requests.post('https://dropme.up.railway.app/user_login/', json={"email":'admin@gmail.com', 'password':'admin'})
+        auth.json()
+        r = requests.get('https://dropme.up.railway.app/machines/qrcode/machine/', headers={'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg1Nzk0Njk3LCJpYXQiOjE2ODMyMDI2OTcsImp0aSI6IjVlZTRkMzNjYWEzZjQyYzU4ZTgwYzUzMmNjNTU4NGEwIiwidXNlcl9pZCI6MX0.mGPAiQ9WRPnjUL5P8L-J6UwJ3gzPwTtNeLFr92z_Cv4'})
+
+        self.qr_img = Image.open(BytesIO(r.content))
+
+        width, height = self.qr_img.size
+        self.qr_img = self.qr_img.resize((int(width/2), int(height/2)))
+        self.qr_photo = ImageTk.PhotoImage(self.qr_img)
+
+        self.qr_label = Label(self.frame, image=self.qr_photo)
+        self.qr_label.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+    def create_widgets(self):        
+        self.frame = Frame(self.window, bg="#D9D9D9", width=312, height=555)
+        self.frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+        self.image_path = relative_to_assets("logo.png")
+        self.image = Image.open(self.image_path)
+        self.photo = ImageTk.PhotoImage(self.image)
+
+        self.image_label = Label(self.frame, image=self.photo)
+        self.image_label.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.image_path = relative_to_assets("logo.png")
+        self.image = Image.open(self.image_path)
+        self.photo = ImageTk.PhotoImage(self.image)
+
+        self.image_label = Label(self.frame, image=self.photo)
+        self.image_label.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.qr_label = tk.Label(self, text="Loading...")
+        self.qr_label.place(relx=0.5, rely=0.4, anchor=CENTER)
+        self.load_image()
+        
+        self.back_img = PhotoImage(file=relative_to_assets("goback.png"))
+        self.back = Button(self.frame,bg="#D9D9D9", image=self.back_img, borderwidth=0, highlightthickness=0, command= self.switch_to_main_page, relief="flat")
+        self.back.place(relx=0.05, rely=0.05)
+        self.frame.pack()
+
+    # def switch_to_Page1(self):
+    #     TimerThread.reset_timer(self)  # reset the timer
+    #     self.image_label.destroy()
+    #     self.frame.destroy() # Forget the frame
+    #     Page2(self.window) # Switch to Page1
+
+    def switch_to_main_page(self):
+        TimerThread.reset_timer(self)  # reset the timer
+        self.frame.destroy() # Forget the frame
+        MainPage(self.window) # Switch to Page1
 
 class Page1(Frame):
     def __init__(self, window):
@@ -150,7 +213,7 @@ class Page1(Frame):
         TimerThread.reset_timer(self)  # reset the timer
         self.image_label.destroy()
         self.frame.destroy() # Forget the frame
-        Page2(self.window) # Switch to Page1
+        QR(self.window) # Switch to Page1
 
     def switch_to_main_page(self):
         TimerThread.reset_timer(self)  # reset the timer
