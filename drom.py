@@ -15,81 +15,81 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\admin\Downloads\Projects\GUI\build\a
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
-class TimerThread(threading.Thread):
-    def __init__(self, timeout, callback, window):
-        threading.Thread.__init__(self)
-        self.timeout = timeout
-        self.callback = callback
-        self.window = window
-        self.event = threading.Event()
+# class TimerThread(threading.Thread):
+#     def __init__(self, timeout, callback, window):
+#         threading.Thread.__init__(self)
+#         self.timeout = timeout
+#         self.callback = callback
+#         self.window = window
+#         self.event = threading.Event()
 
-    def run(self):
-        elapsed_seconds = 0
-        while not self.event.is_set():
-            self.event.wait(self.timeout)
-            elapsed_seconds += self.timeout
-            if not self.event.is_set():
-                print(f"{elapsed_seconds} seconds have elapsed")
-                self.callback(self)
+#     def run(self):
+#         elapsed_seconds = 0
+#         while not self.event.is_set():
+#             self.event.wait(self.timeout)
+#             elapsed_seconds += self.timeout
+#             if not self.event.is_set():
+#                 print(f"{elapsed_seconds} seconds have elapsed")
+#                 self.callback(self)
 
-    def stop(self):
-        self.event.set()
+#     def stop(self):
+#         self.event.set()
 
-    def start_timer(self):
-        self.timer_thread.start()  # start the timer thread
+#     def start_timer(self):
+#         self.timer_thread.start()  # start the timer thread
 
-    def reset_timer(self):
-        self.timer_thread.stop()  # stop the previous timer
-        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)# create a new timer thread
-        self.timer_thread.start()  # start the new timer thread
+#     def reset_timer(self):
+#         self.timer_thread.stop()  # stop the previous timer
+#         self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)# create a new timer thread
+#         self.timer_thread.start()  # start the new timer thread
     
-    def wait_page(self):
-        Waiting(self.window)
+#     def wait_page(self):
+#         Waiting(self.window)
 
-    def quit_app(self):
-        MainPage(self.window)
+#     def quit_app(self):
+#         MainPage(self.window)
 
-class Waiting(Frame):
-    def __init__(self, window):
-        Frame.__init__(self, window)
-        self.window = window
-        self.frame = Frame(self.window) # create timer thread
-        self.create_widgets()
-        self.timer_thread = TimerThread(10,TimerThread.quit_app, self.window)
+# class Waiting(Frame):
+#     def __init__(self, window):
+#         Frame.__init__(self, window)
+#         self.window = window
+#         self.frame = Frame(self.window) # create timer thread
+#         self.create_widgets()
+#         self.timer_thread = TimerThread(10,TimerThread.quit_app, self.window)
 
-    def create_widgets(self):      
-        self.frame = Frame(
-            self.window,
-            bg="#D9D9D9",
-            height=555,
-            width=314,
-            bd=0,
-            highlightthickness=0,
-            relief="ridge"
-        )
-        self.frame.place(relx=0.5, rely=0.5, anchor=CENTER)
-        self.image_path = relative_to_assets("logo.png")
-        self.image = Image.open(self.image_path)
-        self.photo = ImageTk.PhotoImage(self.image)
-        self.image_label = Label(self.frame, image=self.photo)
-        self.image_label.place(relx=0.5, rely=0.05, anchor=CENTER)
+#     def create_widgets(self):      
+#         self.frame = Frame(
+#             self.window,
+#             bg="#D9D9D9",
+#             height=555,
+#             width=314,
+#             bd=0,
+#             highlightthickness=0,
+#             relief="ridge"
+#         )
+#         self.frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+#         self.image_path = relative_to_assets("logo.png")
+#         self.image = Image.open(self.image_path)
+#         self.photo = ImageTk.PhotoImage(self.image)
+#         self.image_label = Label(self.frame, image=self.photo)
+#         self.image_label.place(relx=0.5, rely=0.05, anchor=CENTER)
 
-        self.label1 = Label(self.frame,bg="#D9D9D9", text="DO YOU WANT TO CONTINUE", font=("SansSerifCollection", 9))
-        self.label1.place(relx=0.5, rely=0.3, anchor=CENTER)
+#         self.label1 = Label(self.frame,bg="#D9D9D9", text="DO YOU WANT TO CONTINUE", font=("SansSerifCollection", 9))
+#         self.label1.place(relx=0.5, rely=0.3, anchor=CENTER)
 
-        self.continue_img = PhotoImage(file=relative_to_assets("continue.png"))
-        self.continue_but= Button(self.frame,bg="#D9D9D9", image=self.continue_img, borderwidth=0,command=lambda: self.GetNumber("3"), highlightthickness=0, relief="flat")
-        self.continue_but.place(relx=0.167192,rely=0.2936936)
+#         self.continue_img = PhotoImage(file=relative_to_assets("continue.png"))
+#         self.continue_but= Button(self.frame,bg="#D9D9D9", image=self.continue_img, borderwidth=0,command=lambda: self.GetNumber("3"), highlightthickness=0, relief="flat")
+#         self.continue_but.place(relx=0.167192,rely=0.2936936)
         
-        self.quit_img = PhotoImage(file=relative_to_assets("quit.png"))
-        self.quit_but= Button(self.frame,bg="#D9D9D9", image=self.quit_img, borderwidth=0,command= self.switch_to_Main, highlightthickness=0, relief="flat")
-        self.quit_but.place(relx=0.54,rely=0.2936936)
+#         self.quit_img = PhotoImage(file=relative_to_assets("quit.png"))
+#         self.quit_but= Button(self.frame,bg="#D9D9D9", image=self.quit_img, borderwidth=0,command= self.switch_to_Main, highlightthickness=0, relief="flat")
+#         self.quit_but.place(relx=0.54,rely=0.2936936)
 
-    def switch_to_Main(self):
-        TimerThread.stop(self.timer_thread) # stop the timer
-        self.image_label.destroy()
-        self.frame.destroy() # Forget the frame
-        MainPage(self.window) # Switch to Page1
+#     def switch_to_Main(self):
+#         TimerThread.stop(self.timer_thread) # stop the timer
+#         self.image_label.destroy()
+#         self.frame.destroy() # Forget the frame
+#         MainPage(self.window) # Switch to Page1
 
 class MainPage(Frame):
     def __init__(self, window):
@@ -117,9 +117,9 @@ class QR(Frame):
         Frame.__init__(self, window)
         self.window = window
         self.frame = Frame(window)# create timer thread
-        self.timer_thread = TimerThread(12, TimerThread.wait_page, self.window)  # create timer thread
-        self.create_widgets()
-        TimerThread.start_timer(self)
+        # self.timer_thread = TimerThread(12, TimerThread.wait_page, self.window)  # create timer thread
+        # self.create_widgets()
+        # TimerThread.start_timer(self)
     
     def load_image(self):
         auth = requests.post('https://dropme.up.railway.app/user_login/', json={"email":'admin@gmail.com', 'password':'admin'})
@@ -132,6 +132,7 @@ class QR(Frame):
         self.qr_img = self.qr_img.resize((int(width/2), int(height/2)))
         self.qr_photo = ImageTk.PhotoImage(self.qr_img)
 
+        self.qr_label.destroy()
         self.qr_label = Label(self.frame, image=self.qr_photo)
         self.qr_label.place(relx=0.5, rely=0.5, anchor=CENTER)
 
@@ -146,21 +147,14 @@ class QR(Frame):
         self.image_label = Label(self.frame, image=self.photo)
         self.image_label.place(relx=0.5, rely=0.1, anchor=CENTER)
 
-        self.image_path = relative_to_assets("logo.png")
-        self.image = Image.open(self.image_path)
-        self.photo = ImageTk.PhotoImage(self.image)
-
-        self.image_label = Label(self.frame, image=self.photo)
-        self.image_label.place(relx=0.5, rely=0.1, anchor=CENTER)
-
-        self.qr_label = tk.Label(self, text="Loading...")
+        self.qr_label = Label(self, text="Loading...")
         self.qr_label.place(relx=0.5, rely=0.4, anchor=CENTER)
+
         self.load_image()
         
         self.back_img = PhotoImage(file=relative_to_assets("goback.png"))
         self.back = Button(self.frame,bg="#D9D9D9", image=self.back_img, borderwidth=0, highlightthickness=0, command= self.switch_to_main_page, relief="flat")
         self.back.place(relx=0.05, rely=0.05)
-        self.frame.pack()
 
     # def switch_to_Page1(self):
     #     TimerThread.reset_timer(self)  # reset the timer
@@ -169,7 +163,7 @@ class QR(Frame):
     #     Page2(self.window) # Switch to Page1
 
     def switch_to_main_page(self):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.frame.destroy() # Forget the frame
         MainPage(self.window) # Switch to Page1
 
@@ -178,9 +172,9 @@ class Page1(Frame):
         Frame.__init__(self, window)
         self.window = window
         self.frame = Frame(window)# create timer thread
-        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
-        self.create_widgets()
-        TimerThread.start_timer(self)
+        # self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
+        # self.create_widgets()
+        # TimerThread.start_timer(self)
   
     def create_widgets(self):        
         self.frame = Frame(self.window, bg="#D9D9D9", width=312, height=555)
@@ -210,13 +204,13 @@ class Page1(Frame):
         self.frame.pack()
 
     def switch_to_Page1(self):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.image_label.destroy()
         self.frame.destroy() # Forget the frame
         QR(self.window) # Switch to Page1
 
     def switch_to_main_page(self):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.frame.destroy() # Forget the frame
         MainPage(self.window) # Switch to Page1
 
@@ -225,7 +219,7 @@ class Page2(Frame):
         Frame.__init__(self, window)
         self.window = window
         self.frame = Frame(window)
-        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
+        # self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets()
         # TimerThread.start_timer(self)
   
@@ -333,20 +327,20 @@ class Page2(Frame):
         self.frame.pack()
 
     def switch_to_Page3(self):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.frame.destroy() # Forget the frame
         score = 9
         Page3(self.window,score)
     
     def switch_to_Page1(self):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.frame.destroy() # Forget the frame
         Page1(self.window)
     
     my_string = ""
 
     def GetNumber(self,letter):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.my_string
         self.my_string += letter
         self.print_on_screen(self.my_string )
@@ -361,7 +355,7 @@ class Page3(Frame):
     def __init__(self, window,score):
         Frame.__init__(self, window)
         self.window = window
-        self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
+        # self.timer_thread = TimerThread(12, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets(score)
 
     def create_widgets(self,score):      
@@ -450,7 +444,7 @@ class Page3(Frame):
         )
         
     def switch_to_Page4(self):
-        TimerThread.reset_timer(self)
+        # TimerThread.reset_timer(self)
         self.frame.destroy() # Forget the frame
         Page4(self.window) # Switch to Page1
 
@@ -458,7 +452,7 @@ class Page4(Frame):
     def __init__(self, window):
         Frame.__init__(self, window)
         self.window = window
-        self.timer_thread = TimerThread(15, TimerThread.wait_page,self.window)  # create timer thread
+        # self.timer_thread = TimerThread(15, TimerThread.wait_page,self.window)  # create timer thread
         self.create_widgets()
         # TimerThread.start_timer(self)
 
@@ -511,7 +505,7 @@ class Page4(Frame):
         self.print_but.place(x=110.59600830078125,y=211.510009765625,)
     
     def switch_to_Page5(self):
-        TimerThread.reset_timer(self)  # reset the timer
+        # TimerThread.reset_timer(self)  # reset the timer
         self.frame.destroy() # Forget the frame
         Page5(self.window)
 
@@ -545,7 +539,7 @@ class Page5(Frame):
             rely=0.25,
             anchor=CENTER
         )
-        self.window.after(7000, TimerThread.quit_app)
+        # self.window.after(7000, TimerThread.quit_app)
 
 # class VideoPlayer:
 #     def __init__(self, video_path):
